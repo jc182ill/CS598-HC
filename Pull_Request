@@ -1,0 +1,34 @@
+Title: Add Retina U-Net Detection Task
+
+Name: Jeffrey Chen
+NetID/email: jc182@illinois.edu
+
+Type of Contribution:
+Task
+
+Paper:
+Retina U-Net: Embarrassingly Simple Exploitation of Segmentation Supervision for Medical Object Detection
+(Link: https://arxiv.org/abs/1811.08661)
+
+High-Level Description:
+This PR implements a standalone task for converting segmentation masks
+into object detection targets, inspired by the Retina U-Net framework.
+The task extracts bounding boxes and labels from segmentation masks,
+enabling joint detection and segmentation training pipelines.
+
+The implementation includes:
+- Bounding box extraction from masks
+- Support for filtering small objects via min_area
+- Batch collation for training pipelines
+- Comprehensive unit tests using synthetic data
+
+File Guide:
+- pyhealth/tasks/retina_unet_detection.py → main task implementation
+- tests/tasks/test_retina_unet_detection.py → unit tests
+- examples/retina_unet_task_ablation.py → ablation study
+- docs/api/tasks/pyhealth.tasks.retina_unet_detection.rst → documentation
+
+Notes:
+This implementation focuses on task-level functionality rather than
+full model reproduction, but follows the data processing design used
+in Retina U-Net.
