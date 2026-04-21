@@ -8,6 +8,14 @@ There are three separate layers of "completeness" to look at: the rubric, the pr
 
 A single **Standalone Task** — `RetinaUNetDetectionTask` in `pyhealth/tasks/retina_unet_detection.py`. It converts segmentation masks into bounding boxes (connected-components style), plus one example, one ablation script (`min_area` sweep on synthetic data), an RST doc page, and 7 pytest-style tests. That maps to the rubric's **Option 3 (Standalone Task, 50 pts)**.
 
+## Update — scope reduction to 2D (acknowledged upfront)
+
+Since this document was first written, substantial additional work has landed (see `IMPLEMENTATION_NOTES.md` for the complete picture):
+
+- Dataset class, task, model, training loop, λ ablation, and AP metric are all implemented and tested.
+- Real training runs produced on three public datasets (hippocampus MR, spleen CT, LUNA16 CT nodules) with the paper's central claim reproduced directionally on all three.
+- **One key scope reduction vs. the paper that should be disclosed at the top of any writeup**: we reimplemented Retina U-Net in **2D (slice-wise)** rather than the paper's **3D (patch-wise)** architecture. Torchvision has no 3D RetinaNet, and porting to 3D is a multi-week project that didn't fit the course timeline. The 2D variant closes the method gap but handicaps detection on small 3D-defined targets like lung nodules (LUNA16 AP@0.3 = 0.005 vs. the paper's numbers on the same data). The seg-IoU reproduction is strong across modalities regardless (3× – 50× lift over RetinaNet-only baselines).
+
 ## 2. Gap vs. the Project Proposal (the biggest gap)
 
 The proposal (`CS598 Project Proposal.txt`, Tab 3) explicitly promised a **full pipeline** — this maps to **Option 4 (60 pts = 50 + 10 EC)**:

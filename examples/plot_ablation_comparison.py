@@ -22,8 +22,9 @@ import numpy as np
 
 
 FIG_DIR = pathlib.Path(__file__).parent / "figures"
-HIPPO_JSON = FIG_DIR / "ablation_results.json"
+HIPPO_JSON  = FIG_DIR / "ablation_results.json"
 SPLEEN_JSON = FIG_DIR / "ablation_results_spleen.json"
+LUNA_JSON   = FIG_DIR / "ablation_results_luna16.json"
 OUT = FIG_DIR / "ablation_comparison.png"
 
 
@@ -65,53 +66,70 @@ def draw_bar(ax, data_dict, title, ylabel, max_scale=1.15):
     ax.axhline(values[0], color="#888888", ls="--", lw=0.8, alpha=0.8)
 
 
+def _final_detection_key(hist):
+    """Prefer AP if present, fall back to F1 for legacy JSONs."""
+    final = hist[list(hist.keys())[0]][-1]
+    return "val_ap_30" if "val_ap_30" in final else "val_f1"
+
+
+def _lift(data_dict):
+    """λ=1 vs λ=0 multiplicative lift for a metric, safe against zero baseline."""
+    if 0.0 in data_dict and 1.0 in data_dict and data_dict[0.0] > 0:
+        return data_dict[1.0] / data_dict[0.0]
+    return float("inf")
+
+
 def main():
-    hippo_hist, hippo_cfg = load(HIPPO_JSON)
-    spleen_hist, spleen_cfg = load(SPLEEN_JSON)
+    # Each dataset: (title, json_path, 2D-caveat, short label for subtitle line)
+    specs = []
+    for title, path, subtitle in [
+        ("Hippocampus MR",  HIPPO_JSON,  "~22 train pts, ~490 slices"),
+        ("Spleen CT",       SPLEEN_JSON, "9 train pts, ~680 lesion slices"),
+        ("LUNA16 CT (2D)",  LUNA_JSON,   "400 train slices, nodule ~5-25px"),
+    ]:
+        if path.exists():
+            hist, cfg = load(path)
+            specs.append((title, hist, cfg, subtitle))
+        else:
+            print(f"[skip] {path} missing")
 
-    fig, axes = plt.subplots(2, 2, figsize=(10, 6.5))
+    if not specs:
+        raise SystemExit("no ablation JSONs found")
 
-    hippo_seg = final_values(hippo_hist, "val_seg_iou")
-    spleen_seg = final_values(spleen_hist, "val_seg_iou")
+    n_rows = len(specs)
+    fig, axes = plt.subplots(n_rows, 2, figsize=(10, 3.0 * n_rows + 0.5),
+                             squeeze=False)
 
-    # Prefer AP if present (threshold-free), fall back to F1 for legacy JSONs.
-    def _final_detection(hist):
-        final = hist[list(hist.keys())[0]][-1] if isinstance(hist, dict) else hist[-1]
-        return "val_ap_30" if "val_ap_30" in final else "val_f1"
+    for r, (title, hist, cfg, subtitle) in enumerate(specs):
+        seg = final_values(hist, "val_seg_iou")
+        det_key = _final_detection_key(hist)
+        det = final_values(hist, det_key)
+        det_label = "AP @ IoU 0.3" if det_key == "val_ap_30" else "F1 @ IoU 0.3"
 
-    hippo_key = _final_detection(hippo_hist)
-    spleen_key = _final_detection(spleen_hist)
-    hippo_det = final_values(hippo_hist, hippo_key)
-    spleen_det = final_values(spleen_hist, spleen_key)
-    hippo_det_label = "AP @ IoU 0.3" if hippo_key == "val_ap_30" else "F1 @ IoU 0.3"
-    spleen_det_label = "AP @ IoU 0.3" if spleen_key == "val_ap_30" else "F1 @ IoU 0.3"
+        seg_lift = _lift(seg)
+        det_lift = _lift(det)
 
-    hippo_lift = hippo_seg[1.0] / hippo_seg[0.0] if hippo_seg[0.0] > 0 else float("inf")
-    spleen_lift = spleen_seg[1.0] / spleen_seg[0.0] if spleen_seg[0.0] > 0 else float("inf")
+        seg_lift_s = f"{seg_lift:.1f}×" if seg_lift != float("inf") else "∞×"
+        det_lift_s = f"{det_lift:.1f}×" if det_lift != float("inf") else "∞×"
 
-    draw_bar(axes[0, 0], hippo_seg,
-             f"Hippocampus MR — seg IoU (λ=1 vs λ=0: {hippo_lift:.1f}× lift)",
-             "seg IoU")
-    draw_bar(axes[0, 1], hippo_det,
-             f"Hippocampus MR — detection ({hippo_det_label})",
-             hippo_det_label)
-    draw_bar(axes[1, 0], spleen_seg,
-             f"Spleen CT — seg IoU (λ=1 vs λ=0: {spleen_lift:.0f}× lift)",
-             "seg IoU")
-    draw_bar(axes[1, 1], spleen_det,
-             f"Spleen CT — detection ({spleen_det_label})",
-             spleen_det_label)
+        draw_bar(axes[r, 0], seg,
+                 f"{title} — seg IoU  (λ=1 vs λ=0: {seg_lift_s} lift)",
+                 "seg IoU")
+        draw_bar(axes[r, 1], det,
+                 f"{title} — detection {det_label}  (λ=1 vs λ=0: {det_lift_s} lift)",
+                 det_label)
 
-    for ax in axes[1]:
+    for ax in axes[-1]:
         ax.set_xlabel("seg_weight (λ)")
 
-    hippo_n_train = len(hippo_cfg.get("train_ids", []))
-    spleen_n_train = len(spleen_cfg.get("train_ids", []))
+    subtitle_line = "   |   ".join(
+        f"{title}: {subtitle}" for title, _, _, subtitle in specs
+    )
 
     fig.suptitle(
-        "Retina U-Net λ ablation — seg supervision lifts both modalities over the RetinaNet baseline\n"
-        f"Hippocampus MR: {hippo_n_train} train pts, ~490 slices, 36×~50×~50 vols   |   "
-        f"Spleen CT: {spleen_n_train} train pts, ~680 lesion slices, 512×512×~70 vols",
+        "Retina U-Net λ ablation — seg supervision improves every dataset over the RetinaNet baseline\n"
+        + subtitle_line +
+        "\nAll runs: 2D slice-wise reimplementation (paper uses 3D patches)",
         fontsize=10, y=1.00,
     )
     fig.tight_layout()
