@@ -1,0 +1,18 @@
+# Core — required to import pyhealth.tasks.retina_unet_detection and
+# pyhealth.datasets.retina_unet_ct_dataset.
+numpy>=1.24
+
+# Model — required for pyhealth.models.retina_unet (RetinaNet backbone
+# + U-Net segmentation decoder). CPU-only install is enough for the
+# unit tests; use a CUDA build for training on real data.
+torch>=2.0
+torchvision>=0.15
+
+# Tests.
+pytest>=8.0
+
+# Real-data demo (examples/hippocampus_retina_unet_demo.py).
+# nibabel parses the NIfTI files downloaded from the Medical
+# Segmentation Decathlon; matplotlib draws the overlay figure.
+nibabel>=5.0
+matplotlib>=3.7

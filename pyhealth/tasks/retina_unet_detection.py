@@ -22,12 +22,16 @@ class RetinaUNetDetectionTask(BaseTask):
 
         boxes, labels = self._extract_instances(mask)
 
-        return {
+        # Preserve any upstream metadata (e.g. patient_id, slice_idx from
+        # a dataset) so it travels with the detection targets.
+        processed = {k: v for k, v in sample.items() if k not in {"image", "mask"}}
+        processed.update({
             "image": image,
             "boxes": boxes,
             "labels": labels,
             "mask": mask,
-        }
+        })
+        return processed
 
     def _extract_instances(
         self, mask: np.ndarray

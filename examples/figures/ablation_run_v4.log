@@ -1,0 +1,103 @@
+Device: cuda
+Running λ sweep over (0.0, 0.5, 1.0, 2.0) for 20 epochs, batch=8
+Config: min/max_size=128/128  anchors=((4,), (8,), (16,), (32,), (64,))  eval_iou=0.3  eval_score_thresh=0.005
+Train patients: ['patient_001', 'patient_003', 'patient_004', 'patient_006', 'patient_007', 'patient_008', 'patient_011', 'patient_014', 'patient_015', 'patient_017', 'patient_019', 'patient_020', 'patient_023', 'patient_024', 'patient_025', 'patient_026', 'patient_033', 'patient_034', 'patient_035', 'patient_036', 'patient_204', 'patient_304']   Val patients: ['patient_367']
+Train slices: 490   Val slices: 21
+
+== seg_weight = 0.0 ==
+  [λ=0.00] ep  1/20: train_total=280.337  val_f1=0.030  val_seg_iou=0.095  preds_kept=87.3  max_score=0.0148
+  [λ=0.00] ep  2/20: train_total=51.289  val_f1=0.010  val_seg_iou=0.091  preds_kept=300.0  max_score=0.0142
+  [λ=0.00] ep  3/20: train_total=17.408  val_f1=0.012  val_seg_iou=0.093  preds_kept=291.7  max_score=0.0331
+  [λ=0.00] ep  4/20: train_total=14.886  val_f1=0.012  val_seg_iou=0.094  preds_kept=290.4  max_score=0.0629
+  [λ=0.00] ep  5/20: train_total=10.442  val_f1=0.021  val_seg_iou=0.094  preds_kept=168.5  max_score=0.1455
+  [λ=0.00] ep  6/20: train_total=7.984  val_f1=0.016  val_seg_iou=0.094  preds_kept=221.2  max_score=0.1561
+  [λ=0.00] ep  7/20: train_total=5.479  val_f1=0.013  val_seg_iou=0.094  preds_kept=271.2  max_score=0.0741
+  [λ=0.00] ep  8/20: train_total=6.112  val_f1=0.019  val_seg_iou=0.091  preds_kept=176.2  max_score=0.0771
+  [λ=0.00] ep  9/20: train_total=4.826  val_f1=0.028  val_seg_iou=0.094  preds_kept=122.9  max_score=0.0787
+  [λ=0.00] ep 10/20: train_total=5.065  val_f1=0.019  val_seg_iou=0.094  preds_kept=176.2  max_score=0.0862
+  [λ=0.00] ep 11/20: train_total=3.386  val_f1=0.021  val_seg_iou=0.094  preds_kept=160.0  max_score=0.0832
+  [λ=0.00] ep 12/20: train_total=3.443  val_f1=0.014  val_seg_iou=0.093  preds_kept=249.8  max_score=0.0931
+  [λ=0.00] ep 13/20: train_total=4.897  val_f1=0.018  val_seg_iou=0.096  preds_kept=187.6  max_score=0.0920
+  [λ=0.00] ep 14/20: train_total=3.135  val_f1=0.027  val_seg_iou=0.095  preds_kept=132.8  max_score=0.1862
+  [λ=0.00] ep 15/20: train_total=3.300  val_f1=0.012  val_seg_iou=0.095  preds_kept=290.0  max_score=0.1556
+  [λ=0.00] ep 16/20: train_total=3.170  val_f1=0.018  val_seg_iou=0.095  preds_kept=186.1  max_score=0.1487
+  [λ=0.00] ep 17/20: train_total=2.226  val_f1=0.012  val_seg_iou=0.093  preds_kept=300.0  max_score=0.3321
+  [λ=0.00] ep 18/20: train_total=2.650  val_f1=0.019  val_seg_iou=0.095  preds_kept=194.5  max_score=0.4589
+  [λ=0.00] ep 19/20: train_total=1.992  val_f1=0.012  val_seg_iou=0.095  preds_kept=293.8  max_score=0.3327
+  [λ=0.00] ep 20/20: train_total=2.081  val_f1=0.014  val_seg_iou=0.094  preds_kept=247.8  max_score=0.5102
+
+== seg_weight = 0.5 ==
+  [λ=0.50] ep  1/20: train_total=135.611  val_f1=0.038  val_seg_iou=0.168  preds_kept=82.3  max_score=0.2056
+  [λ=0.50] ep  2/20: train_total=68.415  val_f1=0.019  val_seg_iou=0.148  preds_kept=163.0  max_score=0.1189
+  [λ=0.50] ep  3/20: train_total=23.669  val_f1=0.012  val_seg_iou=0.236  preds_kept=299.1  max_score=0.1177
+  [λ=0.50] ep  4/20: train_total=13.215  val_f1=0.012  val_seg_iou=0.208  preds_kept=299.3  max_score=0.0678
+  [λ=0.50] ep  5/20: train_total=8.652  val_f1=0.014  val_seg_iou=0.283  preds_kept=265.6  max_score=0.1134
+  [λ=0.50] ep  6/20: train_total=7.090  val_f1=0.012  val_seg_iou=0.248  preds_kept=300.0  max_score=0.0870
+  [λ=0.50] ep  7/20: train_total=13.553  val_f1=0.014  val_seg_iou=0.259  preds_kept=279.8  max_score=0.1135
+  [λ=0.50] ep  8/20: train_total=5.145  val_f1=0.015  val_seg_iou=0.224  preds_kept=240.3  max_score=0.0656
+  [λ=0.50] ep  9/20: train_total=4.298  val_f1=0.011  val_seg_iou=0.291  preds_kept=300.0  max_score=0.0933
+  [λ=0.50] ep 10/20: train_total=3.997  val_f1=0.011  val_seg_iou=0.360  preds_kept=300.0  max_score=0.2748
+  [λ=0.50] ep 11/20: train_total=5.908  val_f1=0.021  val_seg_iou=0.298  preds_kept=169.3  max_score=0.1142
+  [λ=0.50] ep 12/20: train_total=3.937  val_f1=0.013  val_seg_iou=0.297  preds_kept=266.9  max_score=0.2424
+  [λ=0.50] ep 13/20: train_total=3.093  val_f1=0.016  val_seg_iou=0.319  preds_kept=229.9  max_score=0.2855
+  [λ=0.50] ep 14/20: train_total=3.044  val_f1=0.012  val_seg_iou=0.305  preds_kept=291.4  max_score=0.2727
+  [λ=0.50] ep 15/20: train_total=2.595  val_f1=0.012  val_seg_iou=0.292  preds_kept=291.4  max_score=0.2671
+  [λ=0.50] ep 16/20: train_total=3.612  val_f1=0.011  val_seg_iou=0.301  preds_kept=300.0  max_score=0.3183
+  [λ=0.50] ep 17/20: train_total=3.045  val_f1=0.022  val_seg_iou=0.300  preds_kept=144.5  max_score=0.4560
+  [λ=0.50] ep 18/20: train_total=1.999  val_f1=0.022  val_seg_iou=0.297  preds_kept=155.2  max_score=0.4860
+  [λ=0.50] ep 19/20: train_total=2.618  val_f1=0.019  val_seg_iou=0.297  preds_kept=175.8  max_score=0.6782
+  [λ=0.50] ep 20/20: train_total=2.194  val_f1=0.015  val_seg_iou=0.284  preds_kept=232.1  max_score=0.5562
+
+== seg_weight = 1.0 ==
+  [λ=1.00] ep  1/20: train_total=5893.229  val_f1=0.039  val_seg_iou=0.081  preds_kept=91.1  max_score=0.1787
+  [λ=1.00] ep  2/20: train_total=54.155  val_f1=0.015  val_seg_iou=0.147  preds_kept=260.2  max_score=0.0808
+  [λ=1.00] ep  3/20: train_total=22.966  val_f1=0.017  val_seg_iou=0.242  preds_kept=201.4  max_score=0.0976
+  [λ=1.00] ep  4/20: train_total=13.023  val_f1=0.011  val_seg_iou=0.248  preds_kept=300.0  max_score=0.0637
+  [λ=1.00] ep  5/20: train_total=33.414  val_f1=0.011  val_seg_iou=0.271  preds_kept=300.0  max_score=0.2229
+  [λ=1.00] ep  6/20: train_total=10.096  val_f1=0.018  val_seg_iou=0.308  preds_kept=199.2  max_score=0.0950
+  [λ=1.00] ep  7/20: train_total=6.771  val_f1=0.019  val_seg_iou=0.306  preds_kept=178.2  max_score=0.1037
+  [λ=1.00] ep  8/20: train_total=5.916  val_f1=0.015  val_seg_iou=0.257  preds_kept=221.8  max_score=0.0835
+  [λ=1.00] ep  9/20: train_total=4.966  val_f1=0.016  val_seg_iou=0.298  preds_kept=214.6  max_score=0.1537
+  [λ=1.00] ep 10/20: train_total=5.537  val_f1=0.012  val_seg_iou=0.315  preds_kept=298.5  max_score=0.3654
+  [λ=1.00] ep 11/20: train_total=4.189  val_f1=0.011  val_seg_iou=0.269  preds_kept=300.0  max_score=0.1292
+  [λ=1.00] ep 12/20: train_total=4.266  val_f1=0.016  val_seg_iou=0.263  preds_kept=234.3  max_score=0.2328
+  [λ=1.00] ep 13/20: train_total=3.649  val_f1=0.016  val_seg_iou=0.284  preds_kept=214.9  max_score=0.5290
+  [λ=1.00] ep 14/20: train_total=3.334  val_f1=0.020  val_seg_iou=0.305  preds_kept=168.0  max_score=0.3684
+  [λ=1.00] ep 15/20: train_total=2.808  val_f1=0.017  val_seg_iou=0.272  preds_kept=205.1  max_score=0.4981
+  [λ=1.00] ep 16/20: train_total=2.951  val_f1=0.012  val_seg_iou=0.280  preds_kept=300.0  max_score=0.3888
+  [λ=1.00] ep 17/20: train_total=2.214  val_f1=0.011  val_seg_iou=0.266  preds_kept=300.0  max_score=0.2484
+  [λ=1.00] ep 18/20: train_total=2.604  val_f1=0.019  val_seg_iou=0.297  preds_kept=178.4  max_score=0.5761
+  [λ=1.00] ep 19/20: train_total=2.342  val_f1=0.030  val_seg_iou=0.285  preds_kept=110.1  max_score=0.4419
+  [λ=1.00] ep 20/20: train_total=2.359  val_f1=0.013  val_seg_iou=0.313  preds_kept=269.3  max_score=0.4929
+
+== seg_weight = 2.0 ==
+  [λ=2.00] ep  1/20: train_total=161.115  val_f1=0.017  val_seg_iou=0.094  preds_kept=169.6  max_score=0.0273
+  [λ=2.00] ep  2/20: train_total=46.853  val_f1=0.014  val_seg_iou=0.261  preds_kept=247.1  max_score=0.0449
+  [λ=2.00] ep  3/20: train_total=23.650  val_f1=0.019  val_seg_iou=0.270  preds_kept=172.0  max_score=0.0876
+  [λ=2.00] ep  4/20: train_total=13.274  val_f1=0.020  val_seg_iou=0.214  preds_kept=167.8  max_score=0.0763
+  [λ=2.00] ep  5/20: train_total=11.156  val_f1=0.032  val_seg_iou=0.259  preds_kept=99.1  max_score=0.1161
+  [λ=2.00] ep  6/20: train_total=10.839  val_f1=0.027  val_seg_iou=0.259  preds_kept=124.9  max_score=0.1520
+  [λ=2.00] ep  7/20: train_total=6.941  val_f1=0.035  val_seg_iou=0.232  preds_kept=92.0  max_score=0.1084
+  [λ=2.00] ep  8/20: train_total=5.864  val_f1=0.013  val_seg_iou=0.246  preds_kept=269.5  max_score=0.0762
+  [λ=2.00] ep  9/20: train_total=5.543  val_f1=0.018  val_seg_iou=0.254  preds_kept=175.6  max_score=0.1038
+  [λ=2.00] ep 10/20: train_total=4.803  val_f1=0.013  val_seg_iou=0.262  preds_kept=284.9  max_score=0.1478
+  [λ=2.00] ep 11/20: train_total=4.668  val_f1=0.015  val_seg_iou=0.222  preds_kept=225.4  max_score=0.1164
+  [λ=2.00] ep 12/20: train_total=3.886  val_f1=0.022  val_seg_iou=0.291  preds_kept=159.5  max_score=0.2707
+  [λ=2.00] ep 13/20: train_total=3.858  val_f1=0.015  val_seg_iou=0.214  preds_kept=227.2  max_score=0.1967
+  [λ=2.00] ep 14/20: train_total=3.827  val_f1=0.033  val_seg_iou=0.310  preds_kept=107.8  max_score=0.3137
+  [λ=2.00] ep 15/20: train_total=3.411  val_f1=0.021  val_seg_iou=0.295  preds_kept=155.6  max_score=0.3580
+  [λ=2.00] ep 16/20: train_total=3.681  val_f1=0.018  val_seg_iou=0.268  preds_kept=180.8  max_score=0.4794
+  [λ=2.00] ep 17/20: train_total=2.870  val_f1=0.016  val_seg_iou=0.274  preds_kept=223.8  max_score=0.4230
+  [λ=2.00] ep 18/20: train_total=2.978  val_f1=0.016  val_seg_iou=0.288  preds_kept=202.8  max_score=0.5129
+  [λ=2.00] ep 19/20: train_total=2.375  val_f1=0.018  val_seg_iou=0.300  preds_kept=198.5  max_score=0.5886
+  [λ=2.00] ep 20/20: train_total=2.682  val_f1=0.019  val_seg_iou=0.296  preds_kept=188.4  max_score=0.8276
+
+=== Final val metrics ===
+     λ |     F1 | precision | recall | seg IoU
+----------------------------------------------
+  0.00 |  0.014 |     0.007 |  0.927 |   0.094
+  0.50 |  0.015 |     0.008 |  0.927 |   0.284
+  1.00 |  0.013 |     0.006 |  0.878 |   0.313
+  2.00 |  0.019 |     0.010 |  0.927 |   0.296
+Wrote /home/mark/CS598-HC/examples/figures/ablation_results.json
+Wrote /home/mark/CS598-HC/examples/figures/ablation_results.png

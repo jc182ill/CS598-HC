@@ -1,0 +1,82 @@
+Device: cuda
+Running λ sweep over (0.0, 0.5, 1.0, 2.0) for 15 epochs, batch=8
+Train patients: ['patient_204', 'patient_304']   Val patients: ['patient_367']
+Train slices: 42   Val slices: 21
+
+== seg_weight = 0.0 ==
+  [λ=0.00] ep  1/15: train_total=18082.173  val_f1=0.000  val_seg_iou=0.093
+  [λ=0.00] ep  2/15: train_total=1421.712  val_f1=0.000  val_seg_iou=0.095
+  [λ=0.00] ep  3/15: train_total=366.077  val_f1=0.000  val_seg_iou=0.095
+  [λ=0.00] ep  4/15: train_total=236.660  val_f1=0.000  val_seg_iou=0.095
+  [λ=0.00] ep  5/15: train_total=133.310  val_f1=0.000  val_seg_iou=0.096
+  [λ=0.00] ep  6/15: train_total=101.797  val_f1=0.000  val_seg_iou=0.095
+  [λ=0.00] ep  7/15: train_total=73.916  val_f1=0.000  val_seg_iou=0.096
+  [λ=0.00] ep  8/15: train_total=42.145  val_f1=0.000  val_seg_iou=0.095
+  [λ=0.00] ep  9/15: train_total=32.991  val_f1=0.000  val_seg_iou=0.095
+  [λ=0.00] ep 10/15: train_total=38.471  val_f1=0.000  val_seg_iou=0.095
+  [λ=0.00] ep 11/15: train_total=28.468  val_f1=0.000  val_seg_iou=0.095
+  [λ=0.00] ep 12/15: train_total=16.972  val_f1=0.000  val_seg_iou=0.095
+  [λ=0.00] ep 13/15: train_total=17.862  val_f1=0.000  val_seg_iou=0.095
+  [λ=0.00] ep 14/15: train_total=16.175  val_f1=0.000  val_seg_iou=0.096
+  [λ=0.00] ep 15/15: train_total=13.897  val_f1=0.000  val_seg_iou=0.096
+
+== seg_weight = 0.5 ==
+  [λ=0.50] ep  1/15: train_total=24004.998  val_f1=0.000  val_seg_iou=0.000
+  [λ=0.50] ep  2/15: train_total=1046.705  val_f1=0.000  val_seg_iou=0.000
+  [λ=0.50] ep  3/15: train_total=312.141  val_f1=0.000  val_seg_iou=0.000
+  [λ=0.50] ep  4/15: train_total=237.962  val_f1=0.000  val_seg_iou=0.000
+  [λ=0.50] ep  5/15: train_total=193.922  val_f1=0.000  val_seg_iou=0.000
+  [λ=0.50] ep  6/15: train_total=82.876  val_f1=0.000  val_seg_iou=0.000
+  [λ=0.50] ep  7/15: train_total=50.150  val_f1=0.000  val_seg_iou=0.000
+  [λ=0.50] ep  8/15: train_total=58.380  val_f1=0.000  val_seg_iou=0.000
+  [λ=0.50] ep  9/15: train_total=45.439  val_f1=0.000  val_seg_iou=0.000
+  [λ=0.50] ep 10/15: train_total=26.839  val_f1=0.000  val_seg_iou=0.000
+  [λ=0.50] ep 11/15: train_total=46.424  val_f1=0.000  val_seg_iou=0.004
+  [λ=0.50] ep 12/15: train_total=32.419  val_f1=0.000  val_seg_iou=0.007
+  [λ=0.50] ep 13/15: train_total=22.569  val_f1=0.000  val_seg_iou=0.010
+  [λ=0.50] ep 14/15: train_total=17.486  val_f1=0.000  val_seg_iou=0.043
+  [λ=0.50] ep 15/15: train_total=9.064  val_f1=0.000  val_seg_iou=0.032
+
+== seg_weight = 1.0 ==
+  [λ=1.00] ep  1/15: train_total=20702.635  val_f1=0.000  val_seg_iou=0.000
+  [λ=1.00] ep  2/15: train_total=939.472  val_f1=0.000  val_seg_iou=0.000
+  [λ=1.00] ep  3/15: train_total=342.828  val_f1=0.000  val_seg_iou=0.018
+  [λ=1.00] ep  4/15: train_total=237.562  val_f1=0.000  val_seg_iou=0.004
+  [λ=1.00] ep  5/15: train_total=118.625  val_f1=0.000  val_seg_iou=0.000
+  [λ=1.00] ep  6/15: train_total=106.188  val_f1=0.000  val_seg_iou=0.191
+  [λ=1.00] ep  7/15: train_total=74.013  val_f1=0.000  val_seg_iou=0.072
+  [λ=1.00] ep  8/15: train_total=45.726  val_f1=0.000  val_seg_iou=0.001
+  [λ=1.00] ep  9/15: train_total=42.200  val_f1=0.000  val_seg_iou=0.029
+  [λ=1.00] ep 10/15: train_total=35.385  val_f1=0.000  val_seg_iou=0.269
+  [λ=1.00] ep 11/15: train_total=27.997  val_f1=0.000  val_seg_iou=0.191
+  [λ=1.00] ep 12/15: train_total=28.696  val_f1=0.000  val_seg_iou=0.138
+  [λ=1.00] ep 13/15: train_total=39.237  val_f1=0.000  val_seg_iou=0.094
+  [λ=1.00] ep 14/15: train_total=16.067  val_f1=0.000  val_seg_iou=0.039
+  [λ=1.00] ep 15/15: train_total=13.612  val_f1=0.000  val_seg_iou=0.117
+
+== seg_weight = 2.0 ==
+  [λ=2.00] ep  1/15: train_total=7346.965  val_f1=0.000  val_seg_iou=0.000
+  [λ=2.00] ep  2/15: train_total=877.450  val_f1=0.000  val_seg_iou=0.000
+  [λ=2.00] ep  3/15: train_total=362.975  val_f1=0.000  val_seg_iou=0.095
+  [λ=2.00] ep  4/15: train_total=165.235  val_f1=0.000  val_seg_iou=0.002
+  [λ=2.00] ep  5/15: train_total=91.390  val_f1=0.000  val_seg_iou=0.000
+  [λ=2.00] ep  6/15: train_total=149.494  val_f1=0.000  val_seg_iou=0.089
+  [λ=2.00] ep  7/15: train_total=74.489  val_f1=0.000  val_seg_iou=0.040
+  [λ=2.00] ep  8/15: train_total=51.874  val_f1=0.000  val_seg_iou=0.000
+  [λ=2.00] ep  9/15: train_total=40.818  val_f1=0.000  val_seg_iou=0.001
+  [λ=2.00] ep 10/15: train_total=35.908  val_f1=0.000  val_seg_iou=0.022
+  [λ=2.00] ep 11/15: train_total=29.223  val_f1=0.000  val_seg_iou=0.058
+  [λ=2.00] ep 12/15: train_total=27.495  val_f1=0.000  val_seg_iou=0.006
+  [λ=2.00] ep 13/15: train_total=21.446  val_f1=0.000  val_seg_iou=0.000
+  [λ=2.00] ep 14/15: train_total=16.408  val_f1=0.000  val_seg_iou=0.025
+  [λ=2.00] ep 15/15: train_total=9.440  val_f1=0.000  val_seg_iou=0.082
+
+=== Final val metrics ===
+     λ |     F1 | precision | recall | seg IoU
+----------------------------------------------
+  0.00 |  0.000 |     0.000 |  0.000 |   0.096
+  0.50 |  0.000 |     0.000 |  0.000 |   0.032
+  1.00 |  0.000 |     0.000 |  0.000 |   0.117
+  2.00 |  0.000 |     0.000 |  0.000 |   0.082
+Wrote /home/mark/CS598-HC/examples/figures/ablation_results.json
+Wrote /home/mark/CS598-HC/examples/figures/ablation_results.png

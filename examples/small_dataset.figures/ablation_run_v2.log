@@ -1,0 +1,83 @@
+Device: cuda
+Running λ sweep over (0.0, 0.5, 1.0, 2.0) for 15 epochs, batch=8
+Config: min/max_size=128/128  anchors=((4,), (8,), (16,), (32,), (64,))  eval_iou=0.3  eval_score_thresh=0.01
+Train patients: ['patient_204', 'patient_304']   Val patients: ['patient_367']
+Train slices: 42   Val slices: 21
+
+== seg_weight = 0.0 ==
+  [λ=0.00] ep  1/15: train_total=87534.717  val_f1=0.000  val_seg_iou=0.099  preds/img=0.0
+  [λ=0.00] ep  2/15: train_total=998.052  val_f1=0.000  val_seg_iou=0.106  preds/img=0.0
+  [λ=0.00] ep  3/15: train_total=422.463  val_f1=0.000  val_seg_iou=0.110  preds/img=0.0
+  [λ=0.00] ep  4/15: train_total=175.443  val_f1=0.000  val_seg_iou=0.095  preds/img=0.0
+  [λ=0.00] ep  5/15: train_total=66.084  val_f1=0.000  val_seg_iou=0.089  preds/img=0.0
+  [λ=0.00] ep  6/15: train_total=57.221  val_f1=0.000  val_seg_iou=0.094  preds/img=0.0
+  [λ=0.00] ep  7/15: train_total=46.021  val_f1=0.000  val_seg_iou=0.095  preds/img=0.0
+  [λ=0.00] ep  8/15: train_total=29.209  val_f1=0.000  val_seg_iou=0.095  preds/img=0.0
+  [λ=0.00] ep  9/15: train_total=22.846  val_f1=0.000  val_seg_iou=0.095  preds/img=0.0
+  [λ=0.00] ep 10/15: train_total=19.452  val_f1=0.000  val_seg_iou=0.097  preds/img=0.0
+  [λ=0.00] ep 11/15: train_total=14.624  val_f1=0.000  val_seg_iou=0.096  preds/img=0.0
+  [λ=0.00] ep 12/15: train_total=11.230  val_f1=0.000  val_seg_iou=0.096  preds/img=0.0
+  [λ=0.00] ep 13/15: train_total=11.805  val_f1=0.000  val_seg_iou=0.097  preds/img=0.0
+  [λ=0.00] ep 14/15: train_total=8.733  val_f1=0.000  val_seg_iou=0.092  preds/img=0.0
+  [λ=0.00] ep 15/15: train_total=9.633  val_f1=0.000  val_seg_iou=0.068  preds/img=0.0
+
+== seg_weight = 0.5 ==
+  [λ=0.50] ep  1/15: train_total=112381.309  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep  2/15: train_total=585.622  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep  3/15: train_total=218.808  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep  4/15: train_total=145.564  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep  5/15: train_total=142.509  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep  6/15: train_total=90.438  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep  7/15: train_total=37.285  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep  8/15: train_total=27.626  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep  9/15: train_total=21.889  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep 10/15: train_total=15.382  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep 11/15: train_total=16.751  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep 12/15: train_total=14.610  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep 13/15: train_total=12.990  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep 14/15: train_total=7.285  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=0.50] ep 15/15: train_total=8.057  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+
+== seg_weight = 1.0 ==
+  [λ=1.00] ep  1/15: train_total=97088.355  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=1.00] ep  2/15: train_total=757.321  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=1.00] ep  3/15: train_total=336.454  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=1.00] ep  4/15: train_total=180.915  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=1.00] ep  5/15: train_total=116.084  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=1.00] ep  6/15: train_total=68.930  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=1.00] ep  7/15: train_total=34.444  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=1.00] ep  8/15: train_total=39.453  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=1.00] ep  9/15: train_total=21.781  val_f1=0.000  val_seg_iou=0.064  preds/img=0.0
+  [λ=1.00] ep 10/15: train_total=20.738  val_f1=0.000  val_seg_iou=0.289  preds/img=0.0
+  [λ=1.00] ep 11/15: train_total=13.318  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=1.00] ep 12/15: train_total=16.454  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=1.00] ep 13/15: train_total=11.534  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=1.00] ep 14/15: train_total=8.111  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=1.00] ep 15/15: train_total=6.536  val_f1=0.000  val_seg_iou=0.046  preds/img=0.0
+
+== seg_weight = 2.0 ==
+  [λ=2.00] ep  1/15: train_total=25705.053  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=2.00] ep  2/15: train_total=654.653  val_f1=0.000  val_seg_iou=0.000  preds/img=49.7
+  [λ=2.00] ep  3/15: train_total=2674.750  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=2.00] ep  4/15: train_total=128.290  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=2.00] ep  5/15: train_total=79.057  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=2.00] ep  6/15: train_total=53.350  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=2.00] ep  7/15: train_total=32.079  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=2.00] ep  8/15: train_total=19.769  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=2.00] ep  9/15: train_total=27.235  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=2.00] ep 10/15: train_total=15.027  val_f1=0.000  val_seg_iou=0.001  preds/img=0.0
+  [λ=2.00] ep 11/15: train_total=10.773  val_f1=0.000  val_seg_iou=0.007  preds/img=0.0
+  [λ=2.00] ep 12/15: train_total=11.433  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=2.00] ep 13/15: train_total=8.961  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=2.00] ep 14/15: train_total=12.883  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+  [λ=2.00] ep 15/15: train_total=8.625  val_f1=0.000  val_seg_iou=0.000  preds/img=0.0
+
+=== Final val metrics ===
+     λ |     F1 | precision | recall | seg IoU
+----------------------------------------------
+  0.00 |  0.000 |     0.000 |  0.000 |   0.068
+  0.50 |  0.000 |     0.000 |  0.000 |   0.000
+  1.00 |  0.000 |     0.000 |  0.000 |   0.046
+  2.00 |  0.000 |     0.000 |  0.000 |   0.000
+Wrote /home/mark/CS598-HC/examples/figures/ablation_results.json
+Wrote /home/mark/CS598-HC/examples/figures/ablation_results.png

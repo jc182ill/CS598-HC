@@ -1,0 +1,15 @@
+# Downloaded medical imaging data — reproducible via the prep steps
+# documented in IMPLEMENTATION_NOTES.md and the Colab notebook. Do not
+# commit (hippocampus is ~12 MB, spleen is ~940 MB).
+examples/data/
+
+# Python bytecode / caches
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Editor / OS cruft
+.DS_Store
+.vscode/
+.idea/
