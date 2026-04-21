@@ -1,0 +1,106 @@
+{
+  "config": {
+    "num_epochs": 3,
+    "batch_size": 8,
+    "lr": 5e-05,
+    "seed": 42,
+    "train_ids": [
+      "patient_train"
+    ],
+    "val_ids": [
+      "patient_val"
+    ],
+    "device": "cuda",
+    "data_root": "examples/data/luna16",
+    "hu_window": [
+      -1000.0,
+      400.0
+    ],
+    "min_size": 256,
+    "max_size": 256,
+    "anchor_sizes": [
+      [
+        4
+      ],
+      [
+        8
+      ],
+      [
+        16
+      ],
+      [
+        32
+      ],
+      [
+        64
+      ]
+    ],
+    "eval_iou": 0.3,
+    "eval_score_thresh": 0.005,
+    "seg_pos_weight": 100.0
+  },
+  "histories": {
+    "2.0": [
+      {
+        "seg_weight": 2.0,
+        "epoch": 0,
+        "train_classification": 0.8629266607761383,
+        "train_bbox_regression": 1.4096472954750061,
+        "train_loss_segmentation": 0.5329668062925339,
+        "train_loss_total": 3.338507556915283,
+        "val_tp": 45,
+        "val_fp": 23955,
+        "val_fn": 35,
+        "val_precision": 0.001875,
+        "val_recall": 0.5625,
+        "val_f1": 0.0037375415282392033,
+        "val_seg_iou": 0.009120096765782142,
+        "val_mean_preds_raw": 300.0,
+        "val_mean_preds_kept": 300.0,
+        "val_max_score": 0.11512067914009094,
+        "val_ap_30": 0.0034858223851261163,
+        "val_ap_50": 0.0003460439771064193
+      },
+      {
+        "seg_weight": 2.0,
+        "epoch": 1,
+        "train_classification": 0.7303119826316834,
+        "train_bbox_regression": 1.250804396867752,
+        "train_loss_segmentation": 0.37427678644657136,
+        "train_loss_total": 2.729669938087463,
+        "val_tp": 42,
+        "val_fp": 23958,
+        "val_fn": 38,
+        "val_precision": 0.00175,
+        "val_recall": 0.525,
+        "val_f1": 0.0034883720930232558,
+        "val_seg_iou": 0.021924241502132208,
+        "val_mean_preds_raw": 300.0,
+        "val_mean_preds_kept": 300.0,
+        "val_max_score": 0.1455746740102768,
+        "val_ap_30": 0.004991389081151471,
+        "val_ap_50": 0.0010269758103344708
+      },
+      {
+        "seg_weight": 2.0,
+        "epoch": 2,
+        "train_classification": 0.7155962133407593,
+        "train_bbox_regression": 1.1658819067478179,
+        "train_loss_segmentation": 0.24918251872062683,
+        "train_loss_total": 2.379843170642853,
+        "val_tp": 36,
+        "val_fp": 23964,
+        "val_fn": 44,
+        "val_precision": 0.0015,
+        "val_recall": 0.45,
+        "val_f1": 0.002990033222591362,
+        "val_seg_iou": 0.016360962714713545,
+        "val_mean_preds_raw": 300.0,
+        "val_mean_preds_kept": 300.0,
+        "val_max_score": 0.2809622585773468,
+        "val_ap_30": 0.0034123346378414137,
+        "val_ap_50": 0.0006352996046728557
+      }
+    ]
+  }
+}

@@ -72,9 +72,19 @@ def main():
     fig, axes = plt.subplots(2, 2, figsize=(10, 6.5))
 
     hippo_seg = final_values(hippo_hist, "val_seg_iou")
-    hippo_f1 = final_values(hippo_hist, "val_f1")
     spleen_seg = final_values(spleen_hist, "val_seg_iou")
-    spleen_f1 = final_values(spleen_hist, "val_f1")
+
+    # Prefer AP if present (threshold-free), fall back to F1 for legacy JSONs.
+    def _final_detection(hist):
+        final = hist[list(hist.keys())[0]][-1] if isinstance(hist, dict) else hist[-1]
+        return "val_ap_30" if "val_ap_30" in final else "val_f1"
+
+    hippo_key = _final_detection(hippo_hist)
+    spleen_key = _final_detection(spleen_hist)
+    hippo_det = final_values(hippo_hist, hippo_key)
+    spleen_det = final_values(spleen_hist, spleen_key)
+    hippo_det_label = "AP @ IoU 0.3" if hippo_key == "val_ap_30" else "F1 @ IoU 0.3"
+    spleen_det_label = "AP @ IoU 0.3" if spleen_key == "val_ap_30" else "F1 @ IoU 0.3"
 
     hippo_lift = hippo_seg[1.0] / hippo_seg[0.0] if hippo_seg[0.0] > 0 else float("inf")
     spleen_lift = spleen_seg[1.0] / spleen_seg[0.0] if spleen_seg[0.0] > 0 else float("inf")
@@ -82,15 +92,15 @@ def main():
     draw_bar(axes[0, 0], hippo_seg,
              f"Hippocampus MR — seg IoU (λ=1 vs λ=0: {hippo_lift:.1f}× lift)",
              "seg IoU")
-    draw_bar(axes[0, 1], hippo_f1,
-             "Hippocampus MR — detection F1",
-             "F1 @ IoU 0.3")
+    draw_bar(axes[0, 1], hippo_det,
+             f"Hippocampus MR — detection ({hippo_det_label})",
+             hippo_det_label)
     draw_bar(axes[1, 0], spleen_seg,
              f"Spleen CT — seg IoU (λ=1 vs λ=0: {spleen_lift:.0f}× lift)",
              "seg IoU")
-    draw_bar(axes[1, 1], spleen_f1,
-             "Spleen CT — detection F1",
-             "F1 @ IoU 0.3")
+    draw_bar(axes[1, 1], spleen_det,
+             f"Spleen CT — detection ({spleen_det_label})",
+             spleen_det_label)
 
     for ax in axes[1]:
         ax.set_xlabel("seg_weight (λ)")

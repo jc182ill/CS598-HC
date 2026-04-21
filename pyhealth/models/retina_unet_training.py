@@ -21,7 +21,7 @@ into something you can actually run end-to-end and compare against a
 RetinaNet-only baseline via the ``seg_weight`` knob.
 """
 
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
 import numpy as np
 import torch
@@ -198,6 +198,93 @@ def _binary_iou(pred: torch.Tensor, gt: torch.Tensor) -> float:
     return inter / union
 
 
+def _average_precision(
+    per_image_preds: List[Dict[str, torch.Tensor]],
+    iou_threshold: float,
+) -> float:
+    """PASCAL VOC-style all-point Average Precision.
+
+    Args:
+        per_image_preds: one dict per image, each with ``pred_boxes``
+            ``[P, 4]``, ``pred_scores`` ``[P]`` and ``gt_boxes`` ``[G, 4]``.
+            Pass every prediction — no score filtering — because AP
+            integrates across the full precision-recall curve.
+        iou_threshold: an anchor-to-GT match counts as a TP iff IoU
+            meets this.
+
+    Returns:
+        AP as a float in ``[0, 1]``. Returns 0.0 if there are no GTs
+        (undefined, but 0 is the conservative choice).
+    """
+    all_scores: List[float] = []
+    all_tp: List[int] = []
+    total_gts = 0
+
+    for sample in per_image_preds:
+        pred_boxes = sample["pred_boxes"]
+        pred_scores = sample["pred_scores"]
+        gt_boxes = sample["gt_boxes"]
+        total_gts += gt_boxes.shape[0]
+
+        if pred_boxes.numel() == 0:
+            continue
+
+        # Sort this image's predictions by score desc; match greedily.
+        order = pred_scores.argsort(descending=True)
+        pred_boxes = pred_boxes[order]
+        pred_scores = pred_scores[order]
+
+        if gt_boxes.numel() > 0:
+            ious = box_iou(pred_boxes, gt_boxes)  # [P, G]
+        else:
+            ious = torch.zeros(pred_boxes.shape[0], 0)
+
+        matched_gt = set()
+        for i in range(pred_boxes.shape[0]):
+            best_iou = 0.0
+            best_gt = -1
+            for g in range(gt_boxes.shape[0]):
+                if g in matched_gt:
+                    continue
+                v = ious[i, g].item()
+                if v > best_iou:
+                    best_iou = v
+                    best_gt = g
+            is_tp = best_gt >= 0 and best_iou >= iou_threshold
+            if is_tp:
+                matched_gt.add(best_gt)
+            all_tp.append(1 if is_tp else 0)
+            all_scores.append(float(pred_scores[i].item()))
+
+    if total_gts == 0 or not all_scores:
+        return 0.0
+
+    # Sort globally across all images by score descending.
+    scores = np.asarray(all_scores)
+    tp = np.asarray(all_tp, dtype=np.float64)
+    order = np.argsort(-scores)
+    tp = tp[order]
+
+    cum_tp = np.cumsum(tp)
+    cum_fp = np.cumsum(1.0 - tp)
+    recall = cum_tp / total_gts
+    precision = cum_tp / np.maximum(cum_tp + cum_fp, 1e-10)
+
+    # Prepend (0, 1), append (1, 0) to pin the PR curve endpoints.
+    recall = np.concatenate([[0.0], recall, [1.0]])
+    precision = np.concatenate([[1.0], precision, [0.0]])
+    # Precision envelope: monotone-decreasing in recall.
+    for i in range(len(precision) - 1, 0, -1):
+        precision[i - 1] = max(precision[i - 1], precision[i])
+
+    # Integrate only over recall jumps.
+    ap = 0.0
+    for i in range(1, len(recall)):
+        if recall[i] > recall[i - 1]:
+            ap += (recall[i] - recall[i - 1]) * precision[i]
+    return float(ap)
+
+
 @torch.no_grad()
 def evaluate(
     model: nn.Module,
@@ -205,15 +292,18 @@ def evaluate(
     device: torch.device,
     iou_threshold: float = 0.3,
     score_threshold: float = 0.01,
+    ap_iou_thresholds: Tuple[float, ...] = (0.3, 0.5),
 ) -> Dict[str, float]:
-    """Detection F1 @ IoU and binary segmentation IoU on a loader.
+    """Detection F1, AP@IoU, and binary segmentation IoU on a loader.
 
-    Defaults are deliberately permissive for the tiny-lesion
-    small-data regime (hippocampus-sized objects at ~10 px are very
-    sensitive to slight box offsets, and under-trained RetinaNet
-    heads often sit below a 0.05 score). Returns counts for diagnosis
-    (``tp``/``fp``/``fn``, mean predictions per image at both the raw
-    and filtered levels).
+    Reports two families of detection metrics:
+
+    * **F1 at a fixed score threshold** (``f1``, ``precision``, ``recall``)
+      — the quick, thresholded view. Sensitive to calibration.
+    * **Average Precision** (``ap_30``, ``ap_50`` by default) — PASCAL VOC
+      all-point AP, integrates over the full precision-recall curve and
+      is score-threshold-independent. This is the right number to
+      compare across models and to the paper.
     """
     model.eval()
     tp = fp = fn = 0
@@ -222,6 +312,7 @@ def evaluate(
     total_preds_raw = 0
     total_preds_kept = 0
     max_score_seen = 0.0
+    per_image_preds: List[Dict[str, torch.Tensor]] = []
 
     for images, targets in loader:
         images = [img.to(device) for img in images]
@@ -250,6 +341,13 @@ def evaluate(
             fp += fpi
             fn += fni
 
+            # AP uses all predictions — no score filtering.
+            per_image_preds.append({
+                "pred_boxes": pred_boxes_raw,
+                "pred_scores": pred_scores,
+                "gt_boxes": gt_boxes,
+            })
+
             # Binary seg IoU at the logits' resolution (target mask is
             # resized to match so we compare apples to apples).
             seg_pred = (seg_logit.sigmoid() > 0.5).squeeze(0)
@@ -264,6 +362,11 @@ def evaluate(
     f1 = 2 * precision * recall / max(precision + recall, 1e-9)
     mean_seg_iou = float(np.mean(seg_ious)) if seg_ious else 0.0
 
+    ap_metrics = {}
+    for iou_t in ap_iou_thresholds:
+        key = f"ap_{int(round(iou_t * 100)):02d}"
+        ap_metrics[key] = _average_precision(per_image_preds, iou_threshold=iou_t)
+
     return {
         "tp": tp,
         "fp": fp,
@@ -275,4 +378,5 @@ def evaluate(
         "mean_preds_raw": total_preds_raw / max(n_samples, 1),
         "mean_preds_kept": total_preds_kept / max(n_samples, 1),
         "max_score": max_score_seen,
+        **ap_metrics,
     }

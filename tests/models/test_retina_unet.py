@@ -83,6 +83,27 @@ def test_train_forward_without_masks_omits_seg_loss():
     )
 
 
+def test_seg_pos_weight_changes_seg_loss():
+    imgs, targets = _tiny_batch()
+
+    torch.manual_seed(0)
+    model_a = RetinaUNet(min_size=128, max_size=128, seg_pos_weight=None).train()
+    torch.manual_seed(0)
+    model_b = RetinaUNet(min_size=128, max_size=128, seg_pos_weight=50.0).train()
+
+    with torch.no_grad():
+        loss_a = model_a(imgs, targets)["loss_segmentation"].item()
+        loss_b = model_b(imgs, targets)["loss_segmentation"].item()
+
+    # Same model init + same inputs; only the positive-class weight
+    # differs. pos_weight > 1 multiplies the positive-pixel contribution,
+    # so the loss must differ.
+    assert loss_a != pytest.approx(loss_b, rel=1e-4)
+    # And pos_weight = 50 on tiny foregrounds should produce a larger loss
+    # than the unweighted version.
+    assert loss_b > loss_a
+
+
 def test_seg_weight_zero_drops_seg_contribution():
     model = RetinaUNet(min_size=128, max_size=128, seg_weight=0.0).train()
     imgs, targets = _tiny_batch()

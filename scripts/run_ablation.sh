@@ -44,8 +44,24 @@ case "$DATASET" in
     ANCHORS="${RUN_ANCHORS:-16,32,64,128,256}"
     OUT_TAG="${RUN_OUT_TAG:-spleen}"
     ;;
+  luna16)
+    # Lung-nodule detection (subset of LIDC-IDRI, most commonly used
+    # benchmark in the Retina U-Net paper's follow-ups). Foreground
+    # nodules occupy well under 1% of pixels, so the default
+    # seg_pos_weight lifts the seg head out of the all-background
+    # collapse that plain BCE falls into at this imbalance.
+    DATA_ROOT="${RUN_DATA_ROOT:-examples/data/luna16}"
+    HU_WINDOW="${RUN_HU_WINDOW:--1000,400}"         # lung CT window
+    MIN_SIZE="${RUN_MIN_SIZE:-256}"
+    MAX_SIZE="${RUN_MAX_SIZE:-256}"
+    ANCHORS="${RUN_ANCHORS:-4,8,16,32,64}"          # nodules are small
+    # Export the pos-weight default so the ablation script picks it up
+    # unless the caller explicitly overrides RUN_SEG_POS_WEIGHT.
+    export RUN_SEG_POS_WEIGHT="${RUN_SEG_POS_WEIGHT:-100}"
+    OUT_TAG="${RUN_OUT_TAG:-luna16}"
+    ;;
   *)
-    echo "Usage: $0 {hippocampus|spleen} [EPOCHS] [LAMBDAS]" >&2
+    echo "Usage: $0 {hippocampus|spleen|luna16} [EPOCHS] [LAMBDAS]" >&2
     exit 1
     ;;
 esac
@@ -81,6 +97,14 @@ LOG_NAME="ablation_run${OUT_TAG:+_$OUT_TAG}.log"
 LOG_DIR="${LOG_DIR:-examples/figures}"
 LOG_PATH="$LOG_DIR/$LOG_NAME"
 mkdir -p "$LOG_DIR"
+
+# Dry-run hook: print config and exit without spawning Python. Used by
+# tests/scripts/test_run_ablation.py so the suite doesn't depend on a
+# specific Python stub being on PATH or exiting cleanly.
+if [[ "${DRY_RUN:-0}" == "1" ]]; then
+  echo "[dry-run] skipping python invocation (would run: $PYTHON examples/retina_unet_seg_weight_ablation.py)"
+  exit 0
+fi
 
 "$PYTHON" examples/retina_unet_seg_weight_ablation.py 2>&1 | tee "$LOG_PATH"
 echo "[done] log saved to $LOG_PATH"

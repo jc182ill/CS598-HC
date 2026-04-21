@@ -137,6 +137,11 @@ class RetinaUNet(BaseModel):
             training objective (λ in the paper). ``0`` disables
             segmentation supervision (reduces to vanilla RetinaNet); the
             proposal calls for ablating this knob.
+        seg_pos_weight: Optional positive-class weight for the binary
+            segmentation BCE loss. Use when foreground occupies a tiny
+            fraction of pixels (e.g. lung nodules at <1% coverage)
+            so the seg head can't collapse to an all-background
+            solution. Pass ``None`` (default) to disable weighting.
         anchor_sizes / aspect_ratios: Anchor box configuration per FPN
             level. Defaults are tuned for small medical lesions.
     """
@@ -151,6 +156,7 @@ class RetinaUNet(BaseModel):
         min_size: int = 128,
         max_size: int = 256,
         seg_weight: float = 1.0,
+        seg_pos_weight: Optional[float] = None,
         anchor_sizes: Optional[Tuple[Tuple[int, ...], ...]] = None,
         aspect_ratios: Optional[Tuple[Tuple[float, ...], ...]] = None,
     ) -> None:
@@ -214,6 +220,7 @@ class RetinaUNet(BaseModel):
         )
 
         self.seg_weight = float(seg_weight)
+        self.seg_pos_weight = float(seg_pos_weight) if seg_pos_weight is not None else None
         self.seg_num_classes = seg_num_classes
         self.in_channels = in_channels
 
@@ -263,7 +270,10 @@ class RetinaUNet(BaseModel):
 
         if self.seg_num_classes == 1:
             fg = (stacked > 0).float().unsqueeze(1)
-            return F.binary_cross_entropy_with_logits(logits, fg)
+            pos_weight = None
+            if self.seg_pos_weight is not None:
+                pos_weight = torch.tensor([self.seg_pos_weight], device=logits.device)
+            return F.binary_cross_entropy_with_logits(logits, fg, pos_weight=pos_weight)
         return F.cross_entropy(logits, stacked.long())
 
     def forward(

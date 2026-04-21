@@ -1,15 +1,15 @@
 """Tests for scripts/run_ablation.sh.
 
-We replace the Python interpreter with ``/bin/true`` so the ablation
-script's call into Python is a no-op — this lets us verify:
+We pass ``DRY_RUN=1`` so the script echoes its resolved config and
+exits before spawning Python — this lets us verify:
 
 1. Usage / error paths.
 2. That dataset-appropriate defaults are echoed correctly.
 3. That RUN_* env overrides pass through.
 
-The log file is still written (the ``tee`` step runs), which is what
-makes the echoed config visible to the test even with a stubbed-out
-interpreter.
+Earlier iterations of these tests stubbed ``PYTHON=/bin/true`` but the
+behavior of that trick varied across systems (seen failing on CI); the
+DRY_RUN hook in the script is portable and self-documenting.
 """
 
 import os
@@ -49,7 +49,7 @@ def test_missing_data_root_errors_with_hint(tmp_path):
     nonexistent = tmp_path / "no_data"
     r = _run(
         ["hippocampus"],
-        {"RUN_DATA_ROOT": str(nonexistent), "PYTHON": "/bin/true"},
+        {"RUN_DATA_ROOT": str(nonexistent), "DRY_RUN": "1"},
     )
     assert r.returncode != 0
     assert "data root not found" in r.stderr
@@ -64,7 +64,7 @@ def test_hippocampus_defaults_echoed(tmp_path):
         ["hippocampus", "5"],
         {
             "RUN_DATA_ROOT": str(data_dir),
-            "PYTHON": "/bin/true",
+            "DRY_RUN": "1",
             "LOG_DIR": str(tmp_path / "logs"),
         },
     )
@@ -83,7 +83,7 @@ def test_spleen_defaults_echoed(tmp_path):
         ["spleen", "3", "1.0"],
         {
             "RUN_DATA_ROOT": str(data_dir),
-            "PYTHON": "/bin/true",
+            "DRY_RUN": "1",
             "LOG_DIR": str(tmp_path / "logs"),
         },
     )
@@ -103,7 +103,7 @@ def test_env_overrides_win_over_defaults(tmp_path):
         ["spleen"],
         {
             "RUN_DATA_ROOT": str(data_dir),
-            "PYTHON": "/bin/true",
+            "DRY_RUN": "1",
             "LOG_DIR": str(tmp_path / "logs"),
             "RUN_MIN_SIZE": "192",
             "RUN_MAX_SIZE": "192",

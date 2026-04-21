@@ -13,6 +13,7 @@ from pyhealth.datasets.retina_unet_ct_dataset import RetinaUNetCTDataset
 from pyhealth.models.retina_unet import RetinaUNet
 from pyhealth.models.retina_unet_training import (
     RetinaUNetTorchDataset,
+    _average_precision,
     _binary_iou,
     _match_predictions,
     collate_fn,
@@ -125,6 +126,98 @@ def test_train_one_epoch_decreases_loss_on_toy_overfit():
     assert np.isfinite(loss_0)
     assert np.isfinite(last)
     assert last < loss_0 + 1e-3  # allow tiny noise
+
+
+def test_average_precision_perfect_ranking():
+    # Two GT boxes, two predictions matching them exactly, scored in
+    # any order → AP must be 1.0 because every recall level hits P=1.
+    samples = [{
+        "pred_boxes": torch.tensor([[10., 10., 20., 20.], [50., 50., 60., 60.]]),
+        "pred_scores": torch.tensor([0.9, 0.8]),
+        "gt_boxes": torch.tensor([[10., 10., 20., 20.], [50., 50., 60., 60.]]),
+    }]
+    assert _average_precision(samples, iou_threshold=0.5) == pytest.approx(1.0)
+
+
+def test_average_precision_no_predictions():
+    samples = [{
+        "pred_boxes": torch.zeros(0, 4),
+        "pred_scores": torch.zeros(0),
+        "gt_boxes": torch.tensor([[10., 10., 20., 20.]]),
+    }]
+    assert _average_precision(samples, iou_threshold=0.5) == 0.0
+
+
+def test_average_precision_no_gt_returns_zero():
+    samples = [{
+        "pred_boxes": torch.tensor([[10., 10., 20., 20.]]),
+        "pred_scores": torch.tensor([0.9]),
+        "gt_boxes": torch.zeros(0, 4),
+    }]
+    # No GTs anywhere → AP undefined; we return 0 as a conservative default.
+    assert _average_precision(samples, iou_threshold=0.5) == 0.0
+
+
+def test_average_precision_non_overlapping_all_fp():
+    samples = [{
+        "pred_boxes": torch.tensor([[100., 100., 110., 110.]]),
+        "pred_scores": torch.tensor([0.9]),
+        "gt_boxes": torch.tensor([[10., 10., 20., 20.]]),
+    }]
+    assert _average_precision(samples, iou_threshold=0.5) == 0.0
+
+
+def test_average_precision_low_score_tp_still_counts():
+    # 9 high-score FPs ahead of one low-score TP → precision at recall 1
+    # is 1/10 = 0.1 exactly (all-point AP).
+    fp_boxes = torch.tensor(
+        [[100. + i * 20, 100., 110. + i * 20, 110.] for i in range(9)]
+    )
+    samples = [{
+        "pred_boxes": torch.cat([fp_boxes, torch.tensor([[10., 10., 20., 20.]])]),
+        "pred_scores": torch.tensor([0.9] * 9 + [0.1]),
+        "gt_boxes": torch.tensor([[10., 10., 20., 20.]]),
+    }]
+    assert _average_precision(samples, iou_threshold=0.5) == pytest.approx(0.1, abs=1e-6)
+
+
+def test_average_precision_monotonic_in_ranking_quality():
+    # Same predictions, same GT — but good prediction ranked first vs last.
+    gt = torch.tensor([[10., 10., 20., 20.]])
+    preds = torch.cat(
+        [torch.tensor([[10., 10., 20., 20.]]),
+         torch.tensor([[100., 100., 110., 110.]])]
+    )
+
+    good_first = [{
+        "pred_boxes": preds,
+        "pred_scores": torch.tensor([0.9, 0.1]),
+        "gt_boxes": gt,
+    }]
+    good_last = [{
+        "pred_boxes": preds,
+        "pred_scores": torch.tensor([0.1, 0.9]),
+        "gt_boxes": gt,
+    }]
+    ap_good = _average_precision(good_first, iou_threshold=0.5)
+    ap_bad = _average_precision(good_last, iou_threshold=0.5)
+    assert ap_good > ap_bad
+    assert ap_good == pytest.approx(1.0)
+
+
+def test_evaluate_reports_ap_keys():
+    ct = _tiny_ct_dataset()
+    ds = RetinaUNetTorchDataset(ct)
+    loader = DataLoader(ds, batch_size=2, shuffle=False, collate_fn=collate_fn)
+
+    from pyhealth.models.retina_unet import RetinaUNet
+    model = RetinaUNet(min_size=64, max_size=64)
+    metrics = evaluate(model, loader, torch.device("cpu"))
+
+    assert "ap_30" in metrics
+    assert "ap_50" in metrics
+    assert 0.0 <= metrics["ap_30"] <= 1.0
+    assert 0.0 <= metrics["ap_50"] <= 1.0
 
 
 def test_evaluate_returns_full_metric_dict():

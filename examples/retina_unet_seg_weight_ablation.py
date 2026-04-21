@@ -133,6 +133,7 @@ def train_one_setting(
     anchor_sizes,
     eval_iou: float,
     eval_score_thresh: float,
+    seg_pos_weight: Optional[float] = None,
 ) -> List[Dict[str, float]]:
     set_seed(seed)
     model = RetinaUNet(
@@ -143,6 +144,7 @@ def train_one_setting(
         min_size=min_size,
         max_size=max_size,
         seg_weight=seg_weight,
+        seg_pos_weight=seg_pos_weight,
         anchor_sizes=anchor_sizes,
     ).to(device)
     opt = torch.optim.Adam(model.parameters(), lr=lr)
@@ -165,10 +167,10 @@ def train_one_setting(
         print(
             f"  [λ={seg_weight:.2f}] ep {epoch+1:>2}/{num_epochs}: "
             f"train_total={train_stats.get('loss_total', 0):.3f}  "
+            f"val_ap30={val_metrics.get('ap_30', 0):.3f}  "
             f"val_f1={val_metrics['f1']:.3f}  "
             f"val_seg_iou={val_metrics['seg_iou']:.3f}  "
-            f"preds_kept={val_metrics['mean_preds_kept']:.1f}  "
-            f"max_score={val_metrics['max_score']:.4f}"
+            f"max_score={val_metrics['max_score']:.3f}"
         )
     return history
 
@@ -229,6 +231,9 @@ def main() -> None:
     anchors_env = os.environ.get("RUN_ANCHORS", "4,8,16,32,64")
     anchor_sizes = tuple((int(s),) for s in anchors_env.split(","))
 
+    pos_w_env = os.environ.get("RUN_SEG_POS_WEIGHT", "").strip()
+    seg_pos_weight = float(pos_w_env) if pos_w_env else None
+
     data_root = Path(os.environ.get("RUN_DATA_ROOT", str(DEFAULT_DATA_ROOT)))
     hu_env = os.environ.get("RUN_HU_WINDOW", "").strip()
     hu_window = tuple(float(x) for x in hu_env.split(",")) if hu_env else None
@@ -248,7 +253,8 @@ def main() -> None:
     print(f"Data root: {data_root}   HU window: {hu_window}")
     print(f"Running λ sweep over {seg_weights} for {num_epochs} epochs, batch={batch_size}")
     print(f"Config: min/max_size={min_size}/{max_size}  anchors={anchor_sizes}  "
-          f"eval_iou={eval_iou}  eval_score_thresh={eval_score_thresh}")
+          f"eval_iou={eval_iou}  eval_score_thresh={eval_score_thresh}  "
+          f"seg_pos_weight={seg_pos_weight}")
 
     train_loader, val_loader, (train_ids, val_ids) = build_loaders(
         data_root, batch_size=batch_size, seed=seed, hu_window=hu_window,
@@ -263,16 +269,22 @@ def main() -> None:
             lam, train_loader, val_loader, device, num_epochs, lr, seed,
             min_size=min_size, max_size=max_size, anchor_sizes=anchor_sizes,
             eval_iou=eval_iou, eval_score_thresh=eval_score_thresh,
+            seg_pos_weight=seg_pos_weight,
         )
 
     print("\n=== Final val metrics ===")
-    header = f"{'λ':>6} | {'F1':>6} | {'precision':>9} | {'recall':>6} | {'seg IoU':>7}"
+    header = (
+        f"{'λ':>6} | {'AP@0.3':>7} | {'AP@0.5':>7} | "
+        f"{'F1':>6} | {'precision':>9} | {'recall':>6} | {'seg IoU':>7}"
+    )
     print(header)
     print("-" * len(header))
     for lam, hist in all_histories.items():
         final = hist[-1]
         print(
-            f"{lam:>6.2f} | {final['val_f1']:>6.3f} | "
+            f"{lam:>6.2f} | {final.get('val_ap_30', 0):>7.3f} | "
+            f"{final.get('val_ap_50', 0):>7.3f} | "
+            f"{final['val_f1']:>6.3f} | "
             f"{final['val_precision']:>9.3f} | {final['val_recall']:>6.3f} | "
             f"{final['val_seg_iou']:>7.3f}"
         )
@@ -296,6 +308,7 @@ def main() -> None:
                     "anchor_sizes": list(anchor_sizes),
                     "eval_iou": eval_iou,
                     "eval_score_thresh": eval_score_thresh,
+                    "seg_pos_weight": seg_pos_weight,
                 },
                 "histories": {str(k): v for k, v in all_histories.items()},
             },

@@ -48,12 +48,14 @@ def main():
     histories, config = load_histories(RESULTS)
     lambdas = sorted(histories.keys())
 
-    fig = plt.figure(figsize=(12, 4.2))
-    gs = fig.add_gridspec(2, 3, width_ratios=[2, 1, 1], height_ratios=[1, 1], hspace=0.45, wspace=0.35)
+    fig = plt.figure(figsize=(13, 5.2))
+    gs = fig.add_gridspec(3, 3, width_ratios=[2, 1, 1], height_ratios=[1, 1, 1],
+                          hspace=0.6, wspace=0.35)
 
     ax_iou = fig.add_subplot(gs[:, 0])
     ax_bar_iou = fig.add_subplot(gs[0, 1:])
-    ax_bar_f1 = fig.add_subplot(gs[1, 1:])
+    ax_bar_ap = fig.add_subplot(gs[1, 1:])
+    ax_bar_f1 = fig.add_subplot(gs[2, 1:])
 
     # Color palette — baseline gets a muted gray, others a sequential blue ramp.
     base_color = "#888888"
@@ -98,17 +100,31 @@ def main():
     # Baseline dashed reference line
     ax_bar_iou.axhline(finals_iou[0], color=base_color, ls="--", lw=0.8, alpha=0.8)
 
-    # --- Bottom right: final F1 bar ---
+    # --- Middle right: final AP@0.3 bar (threshold-independent) ---
+    finals_ap = [histories[l][-1].get("val_ap_30", 0.0) for l in lambdas]
+    bars_ap = ax_bar_ap.bar([str(l) for l in lambdas], finals_ap,
+                            color=bar_colors, edgecolor="black", linewidth=0.6)
+    ax_bar_ap.set_ylabel("Final AP @ IoU 0.3")
+    ax_bar_ap.set_title("Final epoch — detection AP@0.3 (threshold-free)",
+                        fontsize=10, loc="left")
+    ax_bar_ap.grid(alpha=0.3, axis="y")
+    for bar, val in zip(bars_ap, finals_ap):
+        ax_bar_ap.text(bar.get_x() + bar.get_width() / 2, val + max(finals_ap + [1e-3]) * 0.02,
+                       f"{val:.3f}", ha="center", fontsize=8)
+    ax_bar_ap.set_ylim(0, max(finals_ap + [1e-3]) * 1.25)
+    ax_bar_ap.axhline(finals_ap[0], color=base_color, ls="--", lw=0.8, alpha=0.8)
+
+    # --- Bottom right: final F1 bar (for reference; sensitive to threshold) ---
     finals_f1 = [histories[l][-1]["val_f1"] for l in lambdas]
     bars2 = ax_bar_f1.bar([str(l) for l in lambdas], finals_f1, color=bar_colors, edgecolor="black", linewidth=0.6)
     ax_bar_f1.set_xlabel("seg_weight (λ)")
-    ax_bar_f1.set_ylabel("Final detection F1 @ IoU 0.3")
-    ax_bar_f1.set_title("Final epoch — detection F1 (directional, noisy)", fontsize=10, loc="left")
+    ax_bar_f1.set_ylabel("Final F1 @ IoU 0.3")
+    ax_bar_f1.set_title("Final epoch — detection F1 (score-threshold-dependent)", fontsize=10, loc="left")
     ax_bar_f1.grid(alpha=0.3, axis="y")
     for bar, val in zip(bars2, finals_f1):
-        ax_bar_f1.text(bar.get_x() + bar.get_width() / 2, val + 0.0008,
+        ax_bar_f1.text(bar.get_x() + bar.get_width() / 2, val + max(finals_f1 + [1e-3]) * 0.02,
                        f"{val:.3f}", ha="center", fontsize=8)
-    ax_bar_f1.set_ylim(0, max(finals_f1) * 1.3)
+    ax_bar_f1.set_ylim(0, max(finals_f1 + [1e-3]) * 1.3)
     ax_bar_f1.axhline(finals_f1[0], color=base_color, ls="--", lw=0.8, alpha=0.8)
 
     n_epochs = config.get("num_epochs", len(next(iter(histories.values()))))
@@ -127,12 +143,17 @@ def main():
 
     # Also write a small text summary so callers can paste it.
     txt = OUT.with_suffix(".txt")
-    lines = ["Final-epoch val metrics\n", "-" * 32 + "\n"]
-    lines.append(f"{'λ':>5} | {'seg IoU':>8} | {'F1':>6} | {'precision':>9} | {'recall':>6}\n")
+    lines = ["Final-epoch val metrics\n", "-" * 48 + "\n"]
+    lines.append(
+        f"{'λ':>5} | {'AP@0.3':>7} | {'AP@0.5':>7} | {'seg IoU':>8} | "
+        f"{'F1':>6} | {'precision':>9} | {'recall':>6}\n"
+    )
     for lam in lambdas:
         row = histories[lam][-1]
         lines.append(
-            f"{lam:>5.2f} | {row['val_seg_iou']:>8.3f} | {row['val_f1']:>6.3f} | "
+            f"{lam:>5.2f} | {row.get('val_ap_30', 0):>7.3f} | "
+            f"{row.get('val_ap_50', 0):>7.3f} | "
+            f"{row['val_seg_iou']:>8.3f} | {row['val_f1']:>6.3f} | "
             f"{row['val_precision']:>9.3f} | {row['val_recall']:>6.3f}\n"
         )
     lines.append("\n")
