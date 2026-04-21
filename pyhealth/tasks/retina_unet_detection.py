@@ -11,6 +11,10 @@ class RetinaUNetDetectionTask(BaseTask):
         super().__init__()
         self.min_area = min_area
 
+    def __call__(self, sample):
+        """Required by BaseTask."""
+        return self.process_sample(sample)
+
     def process_sample(self, sample: Dict[str, Any]) -> Dict[str, Any]:
 
         image = sample["image"]
