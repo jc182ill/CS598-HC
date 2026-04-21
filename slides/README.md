@@ -2,7 +2,20 @@
 
 `slides.md` is a [Marp](https://marp.app/)-compatible markdown deck for the 4–7 minute final-project video. 9 slides, ~6:20 target speaking time (see `../VIDEO_SCRIPT.md` for the per-slide script and timing).
 
-## How to display / export
+**Note**: raw markdown doesn't look like slides — the `---` lines are slide breaks that only become real page separators when rendered through Marp. Use one of the options below, or just open the pre-rendered `slides.html`.
+
+## Just want to present now?
+
+```bash
+# Open in your default browser — each slide is a page you advance with arrow keys.
+xdg-open slides/slides.html     # Linux
+open slides/slides.html         # macOS
+start slides/slides.html        # Windows
+```
+
+Marp's HTML export includes bespoke navigation (arrow keys, `f` for fullscreen, `.` for speaker-notes toggle). For a PDF, open `slides.html` in Chrome / Firefox and use **Print → Save as PDF** with "Background graphics" enabled.
+
+## How to re-render after edits
 
 Pick whichever is easiest — the markdown file is the source of truth either way.
 
